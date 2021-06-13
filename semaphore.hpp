@@ -120,6 +120,7 @@ public:
         namespace execution = boost::asio::execution;
         using boost::asio::prefer;
         using boost::asio::require;
+        using boost::asio::async_initiate;
 
         return async_initiate<CompletionToken, void()>(
                     [this](auto&& completion_handler) {
