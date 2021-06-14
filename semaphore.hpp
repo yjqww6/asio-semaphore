@@ -6,6 +6,8 @@
 #include <boost/asio/execution.hpp>
 #include <boost/asio/prefer.hpp>
 #include <boost/asio/require.hpp>
+#include <boost/asio/associated_allocator.hpp>
+#include <boost/asio/associated_executor.hpp>
 
 template <typename Executor, typename Mutex = std::mutex>
 class semaphore
@@ -124,7 +126,7 @@ public:
 
         return async_initiate<CompletionToken, void()>(
                     [this](auto&& completion_handler) {
-            auto ex = get_associated_executor(completion_handler, ex_);
+            auto ex = boost::asio::get_associated_executor(completion_handler, ex_);
 
             if(try_wait())
             {
@@ -135,7 +137,7 @@ public:
 
             auto ex1 = prefer(ex_, execution::outstanding_work.tracked);
             auto ex2 = prefer(ex, execution::outstanding_work.tracked);
-            auto alloc = get_associated_allocator(completion_handler);
+            auto alloc = boost::asio::get_associated_allocator(completion_handler);
 
             auto op = details::make_nullary_op([ex1, ex2, h = std::move(completion_handler), alloc]
                                                () mutable {
